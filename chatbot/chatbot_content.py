@@ -6,6 +6,7 @@ from langchain.schema import Document
 from langchain.prompts import ChatPromptTemplate
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
+
 # 환경 변수 로드
 load_dotenv()
 

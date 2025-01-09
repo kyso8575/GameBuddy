@@ -6,12 +6,7 @@ from .serializers import ChatSessionSerializer
 from .chatbot import generate_answer
 from django.contrib.auth.models import User
 
-from rest_framework.response import Response
-from rest_framework import status
-from django.contrib.auth.models import User
-from .models import ChatSession
-from .chatbot import generate_answer
-from .serializers import ChatSessionSerializer
+
 
 
 # 공통 사용자 확인 함수
