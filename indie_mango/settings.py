@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django_seed',
 
     'chatbot',
+    'games',
 ]
 
 MIDDLEWARE = [
