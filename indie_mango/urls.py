@@ -22,7 +22,8 @@ from django.urls.conf import include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('chatbot/', include("chatbot.urls"))
+    path('chatbot/', include("chatbot.urls")),
+    path('games/', include("games.urls")),
 ]
 
 if settings.DEBUG:
