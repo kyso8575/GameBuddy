@@ -5,18 +5,22 @@
     <title>MANGO!!</title>
   </head>
   <body>
+    
     <div class="navbar">
       {% if request.user.is_authenticated %}
-      <h3>안녕하세요, {{request.user.username}}님!</h3>
+      <h3>안녕하세요, {{nickname}}님!</h3> {% comment %}프로필사진과 함꼐 배치{% endcomment %}
       <form action="{% url 'accounts:logout' %}" method="POST">
         {% csrf_token %}
-        <input type="submit">로그아웃</input>
+        <input type="submit" value="로그아웃">
       </form>
-
+      <a href="{% url "accounts:update" %}">회원정보수정</a>
+      <form action="{% url "accounts:delete" %}" method="POST">
+        {% csrf_token %}
+        <input type="submit" value="회원탈퇴">
+      </form>
       {% else %}
-
       <a href="{% url 'accounts:login' %}">로그인</a>
-
+      <a href="{% url 'accounts:signup' %}">회원가입</a>
       {% endif %}
 
     </div>
