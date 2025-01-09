@@ -38,6 +38,7 @@ class SignupForm(UserCreationForm):
         widget=forms.CheckboxSelectMultiple,
         label="그래픽취향"
     )
+    #프로필사진 미구현
     class Meta:
         model = Users
         fields = ['username', 'nickname', 'password1', 'password2', 'age', 'preference1', 'preference2']

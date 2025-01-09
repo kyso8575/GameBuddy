@@ -18,12 +18,12 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from indie_mango import views
-from .views import search
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.search, name='search'),
+    path("accounts/", include("accounts.urls")),
+    path("common/", include("common.urls")),
+    path("users/", include("users.urls")),
 ]
 
 if settings.DEBUG:
