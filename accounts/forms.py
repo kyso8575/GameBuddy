@@ -18,6 +18,7 @@ class SignupForm(UserCreationForm):
         ('action', '액션'),
         ('fps', '1인칭슈팅'),
         ('rts', '전략시뮬'),
+        ('rpg', 'RPG'),
         ('puzzle', '퍼즐'),
         ('horror', '호러'),
         ('arcade', '아케이드'),

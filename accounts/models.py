@@ -7,16 +7,16 @@ class Users(AbstractUser):
     gender = models.CharField(max_length=15)
     preference1 = models.CharField(max_length=30)
     preference2 = models.CharField(max_length=30)
-    # profile_picture =
+    # profile_picture 구현중
         
     groups = models.ManyToManyField(  #충돌이 발생해서 related_name을 만들어 회피함.
         Group,
         related_name="custom_user_groups",  # 기본값인 `user_set` 대신 변경
-        blank=True    )
+        blank=True)
     user_permissions = models.ManyToManyField(
         Permission,
         related_name="custom_user_permissions",  # 기본값인 `user_set` 대신 변경
-        blank=True    )
+        blank=True)
 
     def __str__(self):
         return self.username

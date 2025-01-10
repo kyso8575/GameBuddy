@@ -14,7 +14,7 @@ def login(request):
             user = form.get_user()
             auth_login(request, form.get_user())
             next_url = request.GET.get("next") or "index"
-            return redirect("articles:index")
+            return redirect("common:home")
     else:
         form = AuthenticationForm()
     context = {"form":form}
@@ -24,14 +24,14 @@ def login(request):
 def logout(request):
     if request.user.is_authenticated:
         auth_logout(request)
-    return redirect("articles:index")
+    return redirect("common:home")
 
 @require_http_methods(["GET", "POST"])
 def signup(request):
     if request.method == "POST":
         form = SignupForm(request.POST)
         if form.is_valid():
-            form.save()
+            user = form.save()
             username = form.cleaned_data.get('username')
             raw_password = form.cleaned_data.get('password1')
             nickname = form.cleaned_data.get('nickname')
@@ -39,16 +39,19 @@ def signup(request):
             gender = form.cleaned_data.get('gender')
             preference1 = form.cleaned_data.get('preference1')
             preference2 = form.cleaned_data.get('preference2')
-            user = authenticate(username=username, password=raw_password, nickname=nickname, gender=gender)
+            user = authenticate(username=username, password=raw_password)
             login(request, user)  # 로그인
-            return redirect('index')
+            return redirect('signup_complete')
     else:
         form = SignupForm()
     return render(request, 'accounts/signup.html', {'form': form})
 
+def signup_complete(request):
+    return render(request, 'accounts/signup_complete.html')
+
 def check_username(request):
     username = request.GET.get('username', None)
-    exists = Users.objects.filter(username=username).exists()
+    exists = Users.objects.filter(username=username).exists()  #아이디랑 닉네임 중복체크기능(구현중)
     return JsonResponse({'exists': exists})
 
 def check_nickname(request):
