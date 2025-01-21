@@ -3,7 +3,6 @@ version: "3.9"
 services:
   db:
     image: postgres:13
-    container_name: mango_db
     volumes:
       - postgres_data:/var/lib/postgresql/data
     environment:
@@ -11,11 +10,10 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
     networks:
-      - mangonetwork
+      - mynetwork
 
   web:
     build: .
-    container_name: mango_web
     command: ["sh", "-c", "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"]
     volumes:
       - .:/app
@@ -24,11 +22,11 @@ services:
     depends_on:
       - db
     networks:
-      - mangonetwork
+      - mynetwork
 
 volumes:
   postgres_data:
 
 networks:
-  mangonetwork:
+  mynetwork:
     driver: bridge
