@@ -5,4 +5,5 @@ from .models import ChatSession
 class ChatSessionSerializer(serializers.ModelSerializer):
     class Meta:
         model = ChatSession
-        fields = ['user', 'message']
+        fields = '__all__'
+        # fields = ['user', 'messages']
