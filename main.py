@@ -64,15 +64,14 @@ with st.sidebar:
         st.session_state["registration_active"] = False
         st.session_state["login_active"] = False
         st.session_state["deletion_active"] = False
-        st.divider()
 
     if not st.session_state["logged_in"]:
         if not st.session_state["registration_active"]:
-            if st.button("회원가입 활성화"):
+            if st.button("회원가입"):
                 st.session_state["registration_active"] = True
                 st.session_state["login_active"] = False
         if not st.session_state["login_active"]:
-            if st.button("로그인 활성화"):
+            if st.button("로그인"):
                 st.session_state["login_active"] = True
                 st.session_state["registration_active"] = False
     else:
@@ -82,7 +81,7 @@ with st.sidebar:
             st.session_state["current_user"] = None
             st.success("로그아웃 되었습니다.")
         if not st.session_state["deletion_active"]:
-            if st.button("회원탈퇴 활성화"):
+            if st.button("회원탈퇴"):
                 st.session_state["deletion_active"] = True
                 st.rerun()
 
@@ -101,7 +100,7 @@ if not st.session_state["registration_active"] and not st.session_state["login_a
         caption="망고 사진 (예제 이미지)", 
         use_container_width=True
     )
-
+    st.divider()
     
     st.text_input("검색할 게임의 정보를 입력해주세요.")
     if st.button("검색"):
