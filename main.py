@@ -46,10 +46,6 @@ def delete_user_from_yaml(username, filename="config.yaml"):
         return True
     return False
 
-# 유저 정보 로드
-users = load_users_from_yaml()
-user_data = next((user for user in users if user["username"] == st.session_state["current_user"]), None)
-
 # 초기 세션 상태 설정
 if "registration_active" not in st.session_state:
     st.session_state["registration_active"] = False
@@ -64,9 +60,18 @@ if "deletion_active" not in st.session_state:
 if "profile_active" not in st.session_state:
     st.session_state["profile_active"] = False
 
+# 유저 정보 로드
+users = load_users_from_yaml()
+user_data = next((user for user in users if user["username"] == st.session_state["current_user"]), None)
+
+pg = st.navigation([
+    st.Page("main.py", title="메인페이지", icon="🔥"),
+    st.Page("chatbot.py", title="챗봇페이지", icon=":material/favorite:"),
+])
 
 # 사이드바 버튼 설정
 with st.sidebar:
+    st.title("Mango Features")
     if st.button("홈페이지"):
         st.session_state["registration_active"] = False
         st.session_state["login_active"] = False
@@ -90,20 +95,33 @@ with st.sidebar:
         if st.button("회원탈퇴"):
             st.session_state["deletion_active"] = True
             st.rerun()
-        if st.sidebar.button("내프로필"):
+        if st.button("내프로필"):
             st.session_state["profile_active"] = True
             st.rerun()
         st.divider()
-        st.sidebar.markdown(f"**환영합니다, {user_data['nickname']}님!**")
-
+        st.markdown(f"**환영합니다, {user_data['nickname']}님!**")
+    # 사이드바 꾸미기
+    st.markdown("""
+        <style>
+        [data-testid="stSidebar"] {
+            border: 3px solid orange;
+        }
+        .audio-container {
+            position: absolute !important;
+            bottom: 20px !important;
+            left: 0;
+            right: 0;
+            text-align: center;
+        }
+        </style>
+        """, unsafe_allow_html=True)
+    st.markdown('<div class="audio-container">', unsafe_allow_html=True) 
+    st.audio("ncs_music.mp3", loop=True, autoplay=True) #노래 자동재생
+    st.markdown('</div>', unsafe_allow_html=True)
 
 # 메인 화면
 if not st.session_state["registration_active"] and not st.session_state["login_active"] and not st.session_state["deletion_active"] and not st.session_state["profile_active"]:
     st.title("MANGO")
-
-    # 닉네임 표시
-    if st.session_state["logged_in"]:
-        st.markdown(f"### 환영합니다, {user_data['nickname']}님! 😊")
 
     # 이미지 표시
     st.image(
@@ -165,6 +183,7 @@ if st.session_state["registration_active"]:
                 st.session_state["login_active"] = False
                 
                 st.success(f"회원가입이 완료되었습니다. {nickname}님, 환영합니다!")
+                st.balloons()
                 st.rerun()
         elif cancelled:
             st.session_state["registration_active"] = False  # 회원가입 세션 취소
