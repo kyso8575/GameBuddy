@@ -46,6 +46,10 @@ def delete_user_from_yaml(username, filename="config.yaml"):
         return True
     return False
 
+# 유저 정보 로드
+users = load_users_from_yaml()
+user_data = next((user for user in users if user["username"] == st.session_state["current_user"]), None)
+
 # 초기 세션 상태 설정
 if "registration_active" not in st.session_state:
     st.session_state["registration_active"] = False
@@ -63,10 +67,11 @@ if "profile_active" not in st.session_state:
 
 # 사이드바 버튼 설정
 with st.sidebar:
-    if st.button("망고 홈페이지"):
+    if st.button("홈페이지"):
         st.session_state["registration_active"] = False
         st.session_state["login_active"] = False
         st.session_state["deletion_active"] = False
+        st.session_state["profile_active"] = False
 
     if not st.session_state["logged_in"]:
         if not st.session_state["registration_active"]:
@@ -78,7 +83,6 @@ with st.sidebar:
                 st.session_state["login_active"] = True
                 st.session_state["registration_active"] = False
     else:
-        st.sidebar.markdown(f"**환영합니다, {st.session_state['current_user']}님!**")
         if st.button("로그아웃"):
             st.session_state["logged_in"] = False
             st.session_state["current_user"] = None
@@ -86,18 +90,20 @@ with st.sidebar:
         if st.button("회원탈퇴"):
             st.session_state["deletion_active"] = True
             st.rerun()
-        if st.sidebar.button("프로필"):
+        if st.sidebar.button("내프로필"):
             st.session_state["profile_active"] = True
-            st.rerun()  # 프로필 화면으로 리다이렉트
+            st.rerun()
+        st.divider()
+        st.sidebar.markdown(f"**환영합니다, {user_data['nickname']}님!**")
 
 
 # 메인 화면
 if not st.session_state["registration_active"] and not st.session_state["login_active"] and not st.session_state["deletion_active"] and not st.session_state["profile_active"]:
-    st.title("망고 홈페이지")
+    st.title("MANGO")
 
     # 닉네임 표시
     if st.session_state["logged_in"]:
-        st.markdown(f"### 환영합니다, {st.session_state['current_user']}님! 😊")
+        st.markdown(f"### 환영합니다, {user_data['nickname']}님! 😊")
 
     # 이미지 표시
     st.image(
@@ -109,6 +115,8 @@ if not st.session_state["registration_active"] and not st.session_state["login_a
     st.text_input("검색할 게임의 정보를 입력해주세요.")
     if st.button("검색"):
         pass
+
+    #######여기에 추천게임들 보여주기#######
 
 # 회원가입 처리
 if st.session_state["registration_active"]:
@@ -241,20 +249,12 @@ if st.session_state["deletion_active"]:
 # 프로필 화면
 if st.session_state["profile_active"]:
     st.title("회원 프로필")
+
+    st.write(f"**닉네임**: {user_data['nickname']}")
+    st.write(f"**나이**: {user_data['age']}")
+    st.write(f"**성별**: {user_data['gender']}")
     
-    # 유저 정보 로드
-    users = load_users_from_yaml()
-    user_data = next((user for user in users if user["username"] == st.session_state["current_user"]), None)
-    
-    if user_data:
-        # 프로필 정보 출력
-        st.write(f"**닉네임**: {user_data['nickname']}")
-        st.write(f"**나이**: {user_data['age']}")
-        st.write(f"**성별**: {user_data['gender']}")
-        
-        # 프로필 화면 닫기
-        if st.button("프로필 닫기"):
-            st.session_state["profile_active"] = False
-            st.rerun()  # 홈 화면으로 돌아가기
-    else:
-        st.error("회원 정보를 찾을 수 없습니다.")
+    # 프로필 화면 닫기
+    if st.button("프로필 닫기"):
+        st.session_state["profile_active"] = False
+        st.rerun()  # 홈 화면으로 돌아가기
