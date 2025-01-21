@@ -57,6 +57,9 @@ if "current_user" not in st.session_state:
     st.session_state["current_user"] = None
 if "deletion_active" not in st.session_state:
     st.session_state["deletion_active"] = False
+if "profile_active" not in st.session_state:
+    st.session_state["profile_active"] = False
+
 
 # 사이드바 버튼 설정
 with st.sidebar:
@@ -80,14 +83,16 @@ with st.sidebar:
             st.session_state["logged_in"] = False
             st.session_state["current_user"] = None
             st.success("로그아웃 되었습니다.")
-        if not st.session_state["deletion_active"]:
-            if st.button("회원탈퇴"):
-                st.session_state["deletion_active"] = True
-                st.rerun()
+        if st.button("회원탈퇴"):
+            st.session_state["deletion_active"] = True
+            st.rerun()
+        if st.sidebar.button("프로필"):
+            st.session_state["profile_active"] = True
+            st.rerun()  # 프로필 화면으로 리다이렉트
 
 
 # 메인 화면
-if not st.session_state["registration_active"] and not st.session_state["login_active"] and not st.session_state["deletion_active"]:
+if not st.session_state["registration_active"] and not st.session_state["login_active"] and not st.session_state["deletion_active"] and not st.session_state["profile_active"]:
     st.title("망고 홈페이지")
 
     # 닉네임 표시
@@ -191,10 +196,6 @@ if st.session_state["login_active"]:
             st.session_state["login_active"] = False  # 로그인 세션 취소
 
 
-# 세션 상태 초기화 (초기화되지 않은 변수 사용 시 에러 방지)
-if "deletion_active" not in st.session_state:
-    st.session_state["deletion_active"] = False
-
 # 회원탈퇴 처리
 if st.session_state["deletion_active"]:
     st.title("회원탈퇴")
@@ -236,3 +237,24 @@ if st.session_state["deletion_active"]:
         elif cancelled:
             st.session_state["deletion_active"] = False #회원탈퇴 세션 취소
             st.rerun()
+
+# 프로필 화면
+if st.session_state["profile_active"]:
+    st.title("회원 프로필")
+    
+    # 유저 정보 로드
+    users = load_users_from_yaml()
+    user_data = next((user for user in users if user["username"] == st.session_state["current_user"]), None)
+    
+    if user_data:
+        # 프로필 정보 출력
+        st.write(f"**닉네임**: {user_data['nickname']}")
+        st.write(f"**나이**: {user_data['age']}")
+        st.write(f"**성별**: {user_data['gender']}")
+        
+        # 프로필 화면 닫기
+        if st.button("프로필 닫기"):
+            st.session_state["profile_active"] = False
+            st.rerun()  # 홈 화면으로 돌아가기
+    else:
+        st.error("회원 정보를 찾을 수 없습니다.")
