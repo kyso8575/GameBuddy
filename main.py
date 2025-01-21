@@ -55,8 +55,8 @@ if "logged_in" not in st.session_state:
     st.session_state["logged_in"] = False
 if "current_user" not in st.session_state:
     st.session_state["current_user"] = None
-if "delete_account_active" not in st.session_state:
-    st.session_state["delete_account_active"] = False
+if "deletion_active" not in st.session_state:
+    st.session_state["deletion_active"] = False
 
 # 사이드바 버튼 설정
 with st.sidebar:
@@ -96,8 +96,7 @@ if not st.session_state["registration_active"] and not st.session_state["login_a
 
     # 이미지 표시
     st.image(
-        "https://www.chemicalsafetyfacts.org/wp-content/uploads/shutterstock_609086588-scaled-1-800x400.jpg",  # 이미지예시
-        caption="망고 사진 (예제 이미지)", 
+        "mango_home_image.webp",
         use_container_width=True
     )
     st.divider()
