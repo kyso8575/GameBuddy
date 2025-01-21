@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1> signup complete </h1>
+
+<h3> MANGO의 멤버가 되셨습니다. 감사합니다.</h3>
+
+{% comment %} <form action="{% url "common:home" %}" method="POST">
+    {% csrf_token %}
+    <button type="submit" value="로그인 유지"</button>
+</form>
+
+<form action="{% url 'accounts:logout' %}" method="POST">
+    {% csrf_token %}
+    <input type="submit" value="확인">
+</form> {% endcomment %}
+
+    <!-- 로그인 유지 버튼: 이미 로그인된 상태로 홈 화면 이동 -->
+    <button type="button" onclick="location.href='{% url 'home' %}'">로그인 유지</button>
+
+    <!-- 돌아가기 버튼: 로그인 여부와 관계없이 홈 화면 이동 -->
+    <button type="button" onclick="location.href='{% url 'home' %}'">돌아가기</button>
+
+{% endblock content %}
