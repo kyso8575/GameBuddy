@@ -4,8 +4,6 @@ from games.models import Game
 import os
 from dotenv import load_dotenv
 import re
-import json
-from django.db.models.functions import Lower
 from django.db.models import Q
 import ast
 from functools import reduce
