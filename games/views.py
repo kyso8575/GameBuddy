@@ -11,7 +11,7 @@ class GameListView(APIView):
         playtime_filter = request.data.get('playtime', None)
         esrb_rating_filter = request.data.get('esrb_rating', None)
         platform_filter = request.data.get('platforms', None)
-
+        
         games = Game.objects.all().order_by('-metacritic_score')
 
         # 장르 필터링 (SQLite에서 __contains는 지원되지 않으므로 Python에서 처리)

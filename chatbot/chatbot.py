@@ -9,12 +9,14 @@ import ast
 from functools import reduce
 
 
+
 # 환경 변수 로드
 load_dotenv()
 
 
 
 def get_all_unique_values():
+    
     """
     platforms, esrb_ratings, stores, genres의 고유 값을 가져옵니다.
     """

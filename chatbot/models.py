@@ -1,5 +1,4 @@
 from django.db import models
-from django.contrib.auth.models import User  # Django의 기본 User 모델을 사용
 
 # Create your models here.
 

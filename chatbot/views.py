@@ -7,7 +7,7 @@ from .chatbot import recommend_games, generate_bot_response
 from django.contrib.auth.models import User
 
 
-# 공통 사용자 확인 함수
+# # 공통 사용자 확인 함수
 def get_user_from_request(request):
     user_id = request.data.get('user_id') or request.query_params.get('user_id')
     if not user_id:

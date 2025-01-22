@@ -2,7 +2,7 @@
 URL configuration for indie_mango project.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/4.2/topics/http/urls/
+    https://docs.djangoproject.com/en/5.1/topics/http/urls/
 Examples:
 Function views
     1. Add an import:  from my_app import views
@@ -23,8 +23,6 @@ from django.urls.conf import include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("accounts/", include("accounts.urls")),
-    path("common/", include("common.urls")),
-    path("users/", include("users.urls")),
     path('chatbot/', include("chatbot.urls")),
     path('games/', include("games.urls")),
 ]
