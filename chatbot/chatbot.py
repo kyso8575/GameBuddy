@@ -14,6 +14,14 @@ from functools import reduce
 load_dotenv()
 
 
+# 모델 초기화
+model = ChatOpenAI(model="gpt-4o-mini")
+# 환경 변수에서 API 키 가져오기
+
+api_key = os.getenv("OPENAI_API_KEY")
+if api_key is None:
+    raise ValueError("API key not found. Please set the OPENAI_API_KEY environment variable.")
+
 
 def get_all_unique_values():
     
@@ -25,6 +33,7 @@ def get_all_unique_values():
     unique_stores = Game.objects.values_list('stores', flat=True).distinct()
     unique_genres = Game.objects.values_list('genres', flat=True).distinct()
 
+
     return {
         "platforms": [str(item) for item in unique_platforms],
         "esrb_ratings": [str(item) for item in unique_esrb_ratings],
@@ -33,93 +42,87 @@ def get_all_unique_values():
     }
 
 
-# 모델 초기화
-model = ChatOpenAI(model="gpt-4o-mini")
-# 환경 변수에서 API 키 가져오기
 
-api_key = os.getenv("OPENAI_API_KEY")
-if api_key is None:
-    raise ValueError("API key not found. Please set the OPENAI_API_KEY environment variable.")
-
-
-# 모델 초기화
-
-unique_values = get_all_unique_values()
+def create_parse_prompt():
+    # 유니크한 값들을 가져오는 함수 호출
+    unique_values = get_all_unique_values()
     
-# 각 리스트를 문자열로 변환
-platform_list_str = ", ".join(unique_values['platforms'])
-esrb_list_str = ", ".join(unique_values['esrb_ratings'])
-store_list_str = ", ".join(unique_values['stores'])
-genre_list_str = ", ".join(unique_values['genres'])
+    # 각 리스트를 문자열로 변환
+    platform_list_str = ", ".join(unique_values['platforms'])
+    esrb_list_str = ", ".join(unique_values['esrb_ratings'])
+    store_list_str = ", ".join(unique_values['stores'])
+    genre_list_str = ", ".join(unique_values['genres'])
 
+    # ChatPromptTemplate 구성
+    parse_prompt_template = ChatPromptTemplate.from_messages([
+        ("system", f"""
+        당신은 사용자의 입력에서 게임 추천을 위한 정보를 추출하는 전문가입니다. 
+        사용자의 텍스트에서 아래 조건에 따라 정보를 추출하고, 정확히 지정된 형식으로 반환하세요.
+        각 주제들은 여러 개의 값을 가질 수 있습니다.
 
-# ChatPromptTemplate 구성
-parse_prompt_template = ChatPromptTemplate.from_messages([
-    ("system", f"""
-    당신은 사용자의 입력에서 게임 추천을 위한 정보를 추출하는 전문가입니다. 
-    사용자의 텍스트에서 아래 조건에 따라 정보를 추출하고, 정확히 지정된 형식으로 반환하세요.
-    각 주제들은 여러 개의 값을 가질 수 있습니다.
-
-    **조건**
-    1. 장르는 반드시 아래 리스트 안에서 반환하세요. 비슷한 모든 장르 여러개를 포함하세요. 없으면 '알 수 없음'으로 반환하세요:
-       - {genre_list_str}
-    2. ESRB 등급(esrb_ratings)은 반드시 리스트 안에서 반환하세요. 없으면 '알 수 없음'으로 반환하세요:
-       - {esrb_list_str}
-    3. 플랫폼은 반드시 리스트 안에서 반환하세요. 비슷한 모든 플랫폼들 여러개를 포함시키세요. 없으면 '알 수 없음'으로 반환하세요:
-       - {platform_list_str}
-    4. 출시일(released) 정보가 없으면 '알 수 없음'으로 반환하세요.
-    5. 게임을 구매할 수 있는 상점(stores)은 반드시 리스트 안에서 반환하세요. 없으면 '알 수 없음'으로 반환하세요:
-       - {store_list_str}
+        **조건**
+        1. 장르는 반드시 아래 리스트 안에서 반환하세요. 비슷한 모든 장르 여러개를 포함하세요. 없으면 '알 수 없음'으로 반환하세요:
+           - {genre_list_str}
+        2. ESRB 등급(esrb_ratings)은 반드시 리스트 안에서 반환하세요. 없으면 '알 수 없음'으로 반환하세요:
+           - {esrb_list_str}
+        3. 플랫폼은 반드시 리스트 안에서 반환하세요. 비슷한 모든 플랫폼들 여러개를 포함시키세요. 없으면 '알 수 없음'으로 반환하세요:
+           - {platform_list_str}
+        4. 출시일(released) 정보가 없으면 '알 수 없음'으로 반환하세요.
+        5. 게임을 구매할 수 있는 상점(stores)은 반드시 리스트 안에서 반환하세요. 없으면 '알 수 없음'으로 반환하세요:
+           - {store_list_str}
+        
+        출력 형식: 
+        - 장르: (추출된 여러 장르 또는 '알 수 없음')
+        - 플랫폼: (추출된 여러 플랫폼 또는 '알 수 없음')
+        - 출시일: (추출된 출시일 또는 '알 수 없음')
+        - 상점: (추출된 여러 상점 또는 '알 수 없음')
+        - ESRB 등급: (추출된 여러 ESRB 등급 또는 '알 수 없음')
+        
+        사용자 입력과 무관한 값이나 지정된 범위를 벗어난 값은 절대 포함하지 마세요.
+        """),
+        ("user", "{user_input}")  # 여기서 user_input 자리표시자로 남겨두기
+    ])
     
-       
-    
-    출력 형식: 
-    - 장르: (추출된 여러 장르 또는 '알 수 없음')
-    - 플랫폼: (추출된 여러 플랫폼 또는 '알 수 없음')
-    - 출시일: (추출된 출시일 또는 '알 수 없음')
-    - 상점: (추출된 여러 상점 또는 '알 수 없음')
-    - ESRB 등급: (추출된 여러 ESRB 등급 또는 '알 수 없음')
-    
-    사용자 입력과 무관한 값이나 지정된 범위를 벗어난 값은 절대 포함하지 마세요.
-    """),
-    ("user", """
-    입력: "{user_input}"
-     
-    """)
-])
+    return parse_prompt_template
 
 
-response_prompt_template = ChatPromptTemplate.from_messages([
-    ("system", """
-    당신은 사용자에게 게임 추천 메시지를 작성하는 전문가입니다. 
-    입력된 추천 게임 목록을 기반으로, 각 게임에 대한 간략한 설명을 포함한 추천 메시지를 작성하세요.
 
-    **규칙**
-    1. 각 게임에 대해 간단하고 흥미로운 설명을 작성하세요. 설명은 게임의 장르, 특징, 또는 재미 요소를 포함해야 합니다.
-    2. 게임 목록에 주어진 순서를 유지하여 각 게임에 대한 설명을 작성하세요.
-    3. 모든 게임을 포함하며, 사용자에게 친근하고 매력적인 어조로 작성하세요.
-    4. 설명이 없거나 정보가 부족한 경우, "이 게임은 다양한 모험과 재미를 제공합니다."와 같은 일반적인 문구를 사용하세요.
+def create_response_prompt():
+    response_prompt_template = ChatPromptTemplate.from_messages([
+        ("system", """
+        당신은 사용자에게 게임 추천 메시지를 작성하는 전문가입니다. 
+        입력된 추천 게임 목록을 기반으로, 각 게임에 대한 간략한 설명을 포함한 추천 메시지를 작성하세요.
 
-    """),
-    ("user", """
-    다음은 추천할 만한 게임 목록입니다:
-    {game_list}
+        **규칙**
+        1. 각 게임에 대해 간단하고 흥미로운 설명을 작성하세요. 설명은 게임의 장르, 특징, 또는 재미 요소를 포함해야 합니다.
+        2. 게임 목록에 주어진 순서를 유지하여 각 게임에 대한 설명을 작성하세요.
+        3. 모든 게임을 포함하며, 사용자에게 친근하고 매력적인 어조로 작성하세요.
+        4. 설명이 없거나 정보가 부족한 경우, "이 게임은 다양한 모험과 재미를 제공합니다."와 같은 일반적인 문구를 사용하세요.
 
-    각 게임에 대해 간략한 설명을 추가해주세요.
-    """)
-])
+        """),
+        ("user", """
+        다음은 추천할 만한 게임 목록입니다:
+        {game_list}
+
+        각 게임에 대해 간략한 설명을 추가해주세요.
+        """)
+    ])
+    return response_prompt_template
 
 
-process_prompt_template = ChatPromptTemplate.from_messages([
-    ("system", """
-        당신은 사용자의 입력에서 게임 추천을 위한 정보를 추출하는 전문가입니다.
-        이전 대화 내용을 바탕으로 user input에 대한 적절한 답변을 해 주세요.
-    """),
-    ("user", """
-        입력: "{user_input}"
-    """)
-])
+def create_process_prompt():
 
+    process_prompt_template = ChatPromptTemplate.from_messages([
+        ("system", """
+            당신은 사용자의 입력에서 게임 추천을 위한 정보를 추출하는 전문가입니다.
+            이전 대화 내용을 바탕으로 user input에 대한 적절한 답변을 해 주세요.
+        """),
+        ("user", """
+            입력: "{user_input}"
+        """)
+    ])
+
+    return process_prompt_template
 
 def _parse_list(value):
     """
@@ -142,6 +145,7 @@ def parse_user_input(user_input):
     """
 
     # 프롬프트를 사용자 입력으로 포맷
+    parse_prompt_template = create_parse_prompt()
     prompt = parse_prompt_template.format_messages(user_input=user_input)
     response = model.invoke(prompt)
 
@@ -238,6 +242,7 @@ def generate_response(filtered_games):
         return "죄송합니다. 요청하신 조건에 맞는 게임을 찾을 수 없습니다."
 
     game_list = "\n".join([game.name for game in filtered_games])
+    response_prompt_template = create_response_prompt()
     prompt = response_prompt_template.format_messages(game_list=game_list)
     response = model.invoke(prompt)
     return response.content
@@ -273,6 +278,7 @@ def generate_bot_response(messages, user_input):
                 formatted_messages.append(msg)
 
         # 프롬프트 포맷팅
+        process_prompt_template = create_process_prompt()
         prompt = process_prompt_template.format_messages(user_input=user_input)
 
         # 프롬프트가 리스트인 경우 문자열로 변환

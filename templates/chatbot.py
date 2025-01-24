@@ -96,7 +96,7 @@ def chat_page():
             # 세션 ID를 기반으로 초기 메시지 가져오기
             st.session_state.messages = load_session_messages(st.session_state.selected_session_id)
 
-        # 대화 내역을 위한 스타일 정의
+        # 대화 내역을 위한 스타일 정의2
         st.markdown(
             """
             <style>

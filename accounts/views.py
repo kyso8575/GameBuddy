@@ -85,8 +85,10 @@ class SignupAPIView(APIView):
         )
         user.save()
 
+        serializer = UserSerializer(user)
+
         return Response(
-            {"detail": "Account created successfully!"},
+            {"detail": "Account created successfully!", "user": serializer.data},
             status=status.HTTP_201_CREATED
         )
 
@@ -95,7 +97,7 @@ class UserProfileAPIView(APIView):
     # permission_classes = [IsAuthenticated]
 
     def get(self, request, id):
-        # 사용자 정보
+        # 사용자 정
         user = get_object_or_404(User, id=id)
         
         # 직렬화

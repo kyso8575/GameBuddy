@@ -1,16 +1,16 @@
 """
-WSGI config for indie_mango project.
+WSGI config for game_buddy project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
 For more information on this file, see
-https://docs.djangoproject.com/en/5.1/howto/deployment/wsgi/
+https://docs.djangoproject.com/en/4.2/howto/deployment/wsgi/
 """
 
 import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'indie_mango.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'game_buddy.settings')
 
 application = get_wsgi_application()
