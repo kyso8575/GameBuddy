@@ -30,7 +30,7 @@ class GameListView(APIView):
         if platform_filter and platform_filter != "전체":
             games = [game for game in games if platform_filter in game.platforms]
 
-        games = games[:30]
+        games = games[:100]
         # 필터링된 결과 직렬화
         serializer = GameSerializer(games, many=True)
         return Response(serializer.data)

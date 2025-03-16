@@ -1,0 +1,86 @@
+/* 챗봇 페이지 스타일 */
+.chatbot-content {
+  width: 100%;
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+  flex: 1;
+}
+
+.chatbot-content h1 {
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+
+.chatbot-content p {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #666;
+}
+
+.chat-container {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.chat-messages {
+  height: 400px;
+  padding: 1rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.message {
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  max-width: 80%;
+}
+
+.message.bot {
+  background-color: #f0f0f0;
+  align-self: flex-start;
+}
+
+.message.user {
+  background-color: #0070ff;
+  color: #fff;
+  align-self: flex-end;
+}
+
+.message ul {
+  margin: 0.5rem 0 0;
+  padding-left: 1.5rem;
+}
+
+.message li {
+  margin-bottom: 0.25rem;
+}
+
+.chat-input {
+  display: flex;
+  padding: 1rem;
+  background-color: #f9f9f9;
+  border-top: 1px solid #eee;
+}
+
+.message-input {
+  flex: 1;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  outline: none;
+}
+
+.send-button {
+  background-color: #0070ff;
+  color: #fff;
+  border: none;
+  padding: 0 1.5rem;
+  margin-left: 0.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+} 

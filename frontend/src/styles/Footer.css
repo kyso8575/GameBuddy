@@ -1,0 +1,58 @@
+/* 푸터 */
+.footer-container {
+  width: 100%;
+  background-color: #1a1a1a;
+  margin-top: auto; /* 푸터를 하단에 고정 */
+}
+
+.footer {
+  background-color: #1a1a1a;
+  color: #fff;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  box-sizing: border-box;
+}
+
+.footer-info,
+.footer-links,
+.footer-genres,
+.footer-follow {
+  flex: 1 1 150px;
+  min-width: 150px;
+}
+
+.footer h4 {
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+}
+
+.footer-links ul,
+.footer-genres ul,
+.footer-follow ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-links li,
+.footer-genres li,
+.footer-follow li {
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+}
+
+.footer-bottom {
+  background-color: #1a1a1a;
+  color: #fff;
+  text-align: center;
+  padding: 1rem;
+  font-size: 0.85rem;
+  width: 100%;
+  border-top: 1px solid #333;
+} 

@@ -1,0 +1,55 @@
+/* 헤더 관련 스타일 */
+.header {
+  background-color: #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+  width: 100%;
+}
+
+.nav-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 1200px;
+  height: 60px;
+  margin: 0 auto;
+  padding: 0 1rem;
+  box-sizing: border-box;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.logo {
+  font-weight: bold;
+  font-size: 1.4rem;
+  text-decoration: none;
+  color: #333;
+}
+
+
+.menu {
+  list-style: none;
+  display: flex;
+  gap: 1.5rem;
+  margin-left: auto;
+}
+
+.menu li {
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.menu li a {
+  color: #333;
+  text-decoration: none;
+  transition: color 0.2s;
+  font-weight: 500;
+}
+
+.menu li a:hover {
+  color: #0070ff;
+}
