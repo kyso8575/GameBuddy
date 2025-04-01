@@ -660,7 +660,10 @@ function GameDetailPage() {
                     <div className="review-header">
                       <div className="reviewer-info">
                         <div className="reviewer-name">
-                          {review.user ? review.user.username : review.username || 'Anonymous'}
+                          {review.user ? 
+                            (review.user.first_name ? review.user.first_name : 
+                             review.user.name ? review.user.name : review.user.username) 
+                            : review.username || 'Anonymous'}
                         </div>
                         <div className="review-date">
                           {review.updated_at ? `${new Date(review.updated_at).toLocaleDateString()}` : 'Unknown date'}

@@ -7,7 +7,8 @@ import '../../styles/SignupPage.css';
 
 const SignupPage = () => {
   const [formData, setFormData] = useState({
-    full_name: '',
+    first_name: '',
+    last_name: '',
     username: '',
     password: '',
     confirm_password: '',
@@ -26,7 +27,7 @@ const SignupPage = () => {
     e.preventDefault();
     
     // 기본 유효성 검사
-    if (!formData.full_name || !formData.username || !formData.password || !formData.confirm_password) {
+    if (!formData.first_name || !formData.last_name || !formData.username || !formData.password || !formData.confirm_password) {
       setError('Please fill in all fields.');
       return;
     }
@@ -175,14 +176,27 @@ const SignupPage = () => {
           
           <form className="signup-form" onSubmit={handleSubmit}>
             <div className="form-group">
-              <label htmlFor="full_name">Full Name</label>
+              <label htmlFor="first_name">First Name</label>
               <input
                 type="text"
-                id="full_name"
-                name="full_name"
-                value={formData.full_name}
+                id="first_name"
+                name="first_name"
+                value={formData.first_name}
                 onChange={handleChange}
-                placeholder="Enter your full name"
+                placeholder="Enter your first name"
+                required
+              />
+            </div>
+            
+            <div className="form-group">
+              <label htmlFor="last_name">Last Name</label>
+              <input
+                type="text"
+                id="last_name"
+                name="last_name"
+                value={formData.last_name}
+                onChange={handleChange}
+                placeholder="Enter your last name"
                 required
               />
             </div>

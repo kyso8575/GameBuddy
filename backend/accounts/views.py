@@ -54,13 +54,14 @@ class SignupAPIView(APIView):
     API based Signup view
     """
     def post(self, request):
-        full_name = request.data.get("full_name")
+        first_name = request.data.get("first_name")
+        last_name = request.data.get("last_name")
         username = request.data.get("username")
         password = request.data.get("password")
         confirm_password = request.data.get("confirm_password")
 
         # Check required fields
-        if not all([full_name, username, password, confirm_password]):
+        if not all([first_name, last_name, username, password, confirm_password]):
             return Response(
                 {"detail": "All fields are required."},
                 status=status.HTTP_400_BAD_REQUEST
@@ -96,7 +97,8 @@ class SignupAPIView(APIView):
         user = User.objects.create_user(
             username=username,
             password=password,
-            first_name=full_name
+            first_name=first_name,
+            last_name=last_name
         )
         user.save()
 

@@ -8,7 +8,7 @@ class UserSerializer(serializers.ModelSerializer):
     """리뷰 작성자 정보를 위한 시리얼라이저"""
     class Meta:
         model = User
-        fields = ['id', 'username']
+        fields = ['id', 'username', 'first_name']
 
 class ReviewSerializer(serializers.ModelSerializer):
     """리뷰 시리얼라이저"""
