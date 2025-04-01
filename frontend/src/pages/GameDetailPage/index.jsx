@@ -14,6 +14,11 @@ function GameDetailPage() {
   const [error, setError] = useState(null);
   const [activeScreenshot, setActiveScreenshot] = useState(0);
   
+  // 위시리스트 관련 상태
+  const [isInWishlist, setIsInWishlist] = useState(false);
+  const [wishlistLoading, setWishlistLoading] = useState(false);
+  const [wishlistError, setWishlistError] = useState(null);
+  
   // Review related states
   const [averageRating, setAverageRating] = useState(0);
   const [reviewCount, setReviewCount] = useState(0);
@@ -58,6 +63,93 @@ function GameDetailPage() {
     
     fetchGameDetails();
   }, [id]);
+
+  // 위시리스트 상태 확인
+  useEffect(() => {
+    const checkWishlistStatus = async () => {
+      if (!id || !isAuthenticated() || !token) {
+        setIsInWishlist(false);
+        return;
+      }
+      
+      try {
+        setWishlistLoading(true);
+        const response = await fetch(`http://127.0.0.1:8000/wishlist/game/${id}/`, {
+          headers: {
+            'Authorization': `Token ${token}`
+          }
+        });
+        
+        if (!response.ok) {
+          throw new Error(`Failed to check wishlist status (${response.status})`);
+        }
+        
+        const data = await response.json();
+        setIsInWishlist(data.is_in_wishlist);
+        setWishlistError(null);
+      } catch (err) {
+        console.error("Error checking wishlist status:", err.message);
+        setWishlistError(err.message);
+        setIsInWishlist(false);
+      } finally {
+        setWishlistLoading(false);
+      }
+    };
+    
+    checkWishlistStatus();
+  }, [id, token, isAuthenticated]);
+
+  // 위시리스트에 추가/삭제
+  const toggleWishlist = async () => {
+    if (!isAuthenticated() || !token) {
+      // 로그인이 필요한 경우 처리
+      alert("Please login to add games to your wishlist.");
+      return;
+    }
+    
+    setWishlistLoading(true);
+    
+    try {
+      if (isInWishlist) {
+        // 위시리스트에서 삭제
+        const response = await fetch(`http://127.0.0.1:8000/wishlist/game/${id}/`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Token ${token}`
+          }
+        });
+        
+        if (!response.ok) {
+          throw new Error(`Failed to remove from wishlist (${response.status})`);
+        }
+        
+        setIsInWishlist(false);
+      } else {
+        // 위시리스트에 추가
+        const response = await fetch(`http://127.0.0.1:8000/wishlist/`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Token ${token}`
+          },
+          body: JSON.stringify({ game_id: id })
+        });
+        
+        if (!response.ok) {
+          throw new Error(`Failed to add to wishlist (${response.status})`);
+        }
+        
+        setIsInWishlist(true);
+      }
+      
+      setWishlistError(null);
+    } catch (err) {
+      console.error("Error updating wishlist:", err.message);
+      setWishlistError(err.message);
+    } finally {
+      setWishlistLoading(false);
+    }
+  };
 
   // Function to fetch review data
   const fetchReviews = async () => {
@@ -479,7 +571,14 @@ function GameDetailPage() {
               <div className="detail-section">
                 <div className="game-actions">
                   <button className="buy-button">Buy Game</button>
-                  <button className="wishlist-button">Add to Wishlist</button>
+                  <button 
+                    className={`wishlist-button ${isInWishlist ? 'in-wishlist' : ''}`} 
+                    onClick={toggleWishlist}
+                    disabled={wishlistLoading}
+                  >
+                    {wishlistLoading ? 'Loading...' : isInWishlist ? 'Remove from Wishlist' : 'Add to Wishlist'}
+                  </button>
+                  {wishlistError && <div className="wishlist-error">{wishlistError}</div>}
                 </div>
               </div>
             </div>
