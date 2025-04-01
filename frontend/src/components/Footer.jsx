@@ -5,38 +5,40 @@ function Footer() {
   return (
     <div className="footer-container">
       <footer className="footer">
-        <div className="footer-info">
-          <h4>GameFinder</h4>
-          <p>Find your next favorite game with our personalized recommendations.</p>
+        <div className="footer-about">
+          <h4>GameBuddy</h4>
+          <p>Your personal guide to the gaming world. Discover, explore, and find your next favorite game.</p>
+          <div className="social-icons">
+            <span className="social-icon">🐦</span>
+            <span className="social-icon">📘</span>
+            <span className="social-icon">📸</span>
+            <span className="social-icon">📱</span>
+          </div>
         </div>
+        
         <div className="footer-links">
-          <h4>Quick Links</h4>
+          <h4>Explore</h4>
           <ul>
             <li>Home</li>
-            <li>Chatbot</li>
-            <li>Browse</li>
+            <li>Browse Games</li>
           </ul>
         </div>
-        <div className="footer-genres">
-          <h4>Genres</h4>
+        
+        <div className="footer-links">
+          <h4>Resources</h4>
           <ul>
-            <li>Action</li>
-            <li>RPG</li>
-            <li>Strategy</li>
+            <li>Privacy Policy</li>
+            <li>Terms of Service</li>
+            <li>Cookie Policy</li>
           </ul>
         </div>
-        <div className="footer-follow">
-          <h4>Follow Us</h4>
-          <ul>
-            <li>🐦</li>
-            <li>📘</li>
-            <li>📸</li>
-          </ul>
+        
+        <div className="footer-contact">
+          <h4>Contact Us</h4>
+          <p>Email: support@gamebuddy.com</p>
         </div>
+
       </footer>
-      <div className="footer-bottom">
-        © 2025 GameFinder. All rights reserved.
-      </div>
     </div>
   );
 }
