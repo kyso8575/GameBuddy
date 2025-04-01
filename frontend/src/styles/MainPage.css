@@ -1,0 +1,190 @@
+/* 전체 레이아웃 */
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  width: 100%;
+  background-color: #f3f3f3;
+  font-family: sans-serif;
+  color: #333;
+  margin: 0;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* 흰색 배경이 필요한 모든 요소에 적용 */
+.white-bg {
+  background-color: #ffffff !important;
+  color: #333 !important;
+}
+
+/* 검색 및 필터 영역 */
+.search-filter-section {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 1200px;
+  margin: 1rem auto;
+  padding: 0 1.5rem;
+  box-sizing: border-box;
+  gap: 1rem;
+}
+
+.search-box {
+  width: calc(75% - 0.5rem);
+  display: flex;
+  box-sizing: border-box;
+  background-color: #ffffff !important;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.search-input {
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 4px 0 0 4px;
+  outline: none;
+  background-color: #ffffff !important;
+  color: #333 !important;
+}
+
+.search-button {
+  background-color: #ffffff !important;
+  border: 1px solid #ccc;
+  border-left: 0;
+  border-radius: 0 4px 4px 0;
+  cursor: pointer;
+  padding: 0 1rem;
+  color: #333 !important;
+}
+
+.dropdowns {
+  display: flex;
+  width: 25%;
+  align-items: center;
+  box-sizing: border-box;
+  gap: 0.5rem;
+}
+
+.dropdown {
+  margin-right: 0.5rem;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  outline: none;
+  background-color: #fff;
+  cursor: pointer;
+  flex: 1;
+}
+
+.filter-button {
+  background-color: #000;
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.filter-button:hover {
+  background-color: #333;
+}
+
+/* 메인 콘텐트(게임 카드) */
+.main-content {
+  width: 100%;
+  max-width: 1200px;
+  margin: 1rem auto;
+  padding: 0 1.5rem;
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  box-sizing: border-box;
+  flex: 1;
+  justify-content: space-between;
+}
+
+/* 페이지네이션 스타일 */
+.pagination-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 1rem auto 2rem;
+  padding: 0 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.pagination-info {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+.pagination {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.pagination-btn {
+  min-width: 40px;
+  height: 40px;
+  border: 1px solid #ddd;
+  background-color: #fff;
+  color: #333;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.pagination-btn:hover {
+  background-color: #f3f3f3;
+  border-color: #ccc;
+}
+
+.pagination-btn.active {
+  background-color: #000;
+  color: #fff;
+  border-color: #000;
+}
+
+.pagination-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: #f9f9f9;
+}
+
+@media (max-width: 1200px) {
+  .search-box {
+    width: 70%;
+  }
+  
+  .dropdowns {
+    width: 30%;
+  }
+}
+
+@media (max-width: 900px) {
+  .search-filter-section {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .search-box, 
+  .dropdowns {
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+}
