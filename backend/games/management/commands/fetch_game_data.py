@@ -78,6 +78,12 @@ class Command(BaseCommand):
     def process_game(self, game_data):
         """Process a single game data and return a Game model instance"""
         try:
+            # 게임 ID 가져오기
+            game_id = game_data.get('id')
+            if not game_id:
+                self.log_warning(f"Game without ID: {game_data.get('name', 'unknown')}")
+                return None
+
             # genres에서 name만 추출, 기본값은 빈 문자열
             genres = [genre.get('name', '') for genre in game_data.get('genres', [])]
 
@@ -96,6 +102,7 @@ class Command(BaseCommand):
 
             # Game 데이터 생성 (아직 저장하지 않음)
             return {
+                'id': game_id,  # API에서 제공하는 ID 사용
                 'name': game_data.get('name', ''),
                 'released': game_data.get('released', ''),
                 'background_image': game_data.get('background_image', ''),
@@ -122,7 +129,8 @@ class Command(BaseCommand):
             with transaction.atomic():
                 for game_data in games_data:
                     if game_data:
-                        if not Game.objects.filter(name=game_data['name']).exists():
+                        game_id = game_data['id']
+                        if not Game.objects.filter(id=game_id).exists():
                             game = Game(**game_data)
                             game.save()
                             saved_count += 1
