@@ -2,9 +2,9 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 
 class User(AbstractUser):
-    """커스텀 사용자 모델"""
+    """Custom user model"""
 
-    # 📸 프로필 이미지 필드
+    # 📸 Profile image field
     profile_image = models.ImageField(
         upload_to='profile_images/',
         null=True,

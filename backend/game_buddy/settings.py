@@ -1,4 +1,3 @@
-
 """
 Django settings for game_buddy project.
 
@@ -46,18 +45,23 @@ INSTALLED_APPS = [
 
     'django_seed',
     'rest_framework',
+    'rest_framework.authtoken',
+    'corsheaders',
 
     'chatbot',
     'games',
     'accounts',
-
+    'reviews',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    # Session middleware is only needed for Django admin page
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    # Disable CSRF protection for API endpoints
+    # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -154,3 +158,53 @@ MEDIA_ROOT = BASE_DIR / "media"
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# CORS 설정 추가
+# CORS_ALLOW_ALL_ORIGINS = True  # 개발 환경에서는 모든 출처 허용 - 이 설정은 credentials와 함께 사용할 수 없음
+
+# 특정 출처만 허용하고 싶은 경우 (프로덕션 환경에 권장)
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+]
+
+# credentials 허용 설정 (쿠키, 인증 헤더 등)
+CORS_ALLOW_CREDENTIALS = True
+
+# 필요한 HTTP 메서드 허용
+CORS_ALLOW_METHODS = [
+    "GET",
+    "POST",
+    "PUT",
+    "PATCH",
+    "DELETE",
+    "OPTIONS",
+]
+
+# 필요한 헤더 허용
+CORS_ALLOW_HEADERS = [
+    "accept",
+    "accept-encoding",
+    "authorization",
+    "content-type",
+    "dnt",
+    "origin",
+    "user-agent",
+    "x-csrftoken",
+    "x-requested-with",
+]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+    'EXCEPTION_HANDLER': 'game_buddy.utils.custom_exception_handler',
+    'NON_FIELD_ERRORS_KEY': 'detail',
+    # API 예외만 반환하고 HTML 디버그 화면 비활성화
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+    ] if not DEBUG else [
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+    ],
+}

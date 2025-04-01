@@ -25,6 +25,7 @@ urlpatterns = [
     path("accounts/", include("accounts.urls")),
     path('chatbot/', include("chatbot.urls")),
     path('games/', include("games.urls")),
+    path('reviews/', include("reviews.urls")),
 ]
 
 if settings.DEBUG:
