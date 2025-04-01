@@ -1,9 +1,10 @@
 /* 게임 카드 스타일 */
 .game-card {
   background-color: #fff;
-  width: calc((100% - 3rem) / 4); /* 한 줄에 4개 카드 */
+  width: 290px; /* 고정된 너비 */
+  height: 280px; /* 조금 더 높이 추가 */
   margin-bottom: 1rem;
-  padding: 1rem;
+  padding: .8rem;
   border-radius: 8px;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
   text-align: left;
@@ -12,7 +13,7 @@
   gap: 0.5rem;
   box-sizing: border-box;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
-  width: 100%;
+  position: relative;
 }
 
 .game-card:hover {
@@ -21,7 +22,7 @@
 }
 
 .game-screenshot {
-  background-color: #ccc;
+  width: 100%; /* 너비를 부모 요소에 맞춤 */
   height: 150px;
   border-radius: 4px;
   display: flex;
@@ -29,54 +30,99 @@
   justify-content: center;
   font-weight: bold;
   color: #555;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
   overflow: hidden;
+  background-color: #f0f0f0;
+  position: relative; /* 포지션 상대적으로 설정 */
 }
 
 .game-screenshot img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: cover; /* 비율을 유지하면서 영역을 채움 */
+  object-position: center; /* 이미지 중앙을 기준으로 표시 */
+  position: absolute; /* 절대 위치로 설정 */
+  top: 0;
+  left: 0;
 }
 
-.game-title {
-  font-size: 1rem;
+/* 게임 정보 컨테이너 */
+.game-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.game-name {
+  font-size: 1.1rem;
   font-weight: bold;
   margin: 0;
+  line-height: 1.3;
+  /* 2줄 이상일 경우 말줄임표 표시 */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
+/* 평점 스타일 */
 .rating {
-  color: #444;
-  margin-top: 8px;
+  display: inline-flex;
+  align-items: center;
   font-weight: bold;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 1rem;
+  width: fit-content;
+  margin-bottom: 0.2rem;
 }
 
-.tags {
-  font-size: 0.9rem;
-  color: #666;
+.rating-score {
+  margin-right: 2px;
 }
 
-/* 카드 콘텐츠 스타일 */
-.game-card-content {
-  padding: 8px;
-  text-align: left;
-}
-
-/* 액션 버튼 스타일 */
-.game-card-actions {
-  display: flex;
-  justify-content: flex-end;
-  padding: 16px;
-}
-
-.game-card-actions button {
-  background-color: black;
+/* 점수 등급별 색상 */
+.rating-excellent {
+  background-color: #5cb85c;
   color: white;
-  width: 90px;
-  height: 30px;
-  font-size: 12px;
-  border-radius: 0px;
-  margin-right: auto;
+}
+
+.rating-good {
+  background-color: #5bc0de;
+  color: white;
+}
+
+.rating-average {
+  background-color: #f0ad4e;
+  color: white;
+}
+
+.rating-poor {
+  background-color: #d9534f;
+  color: white;
+}
+
+/* 메타데이터(장르, 플랫폼) 스타일 */
+.game-metadata {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  font-size: 0.85rem;
+  color: #666;
+  margin-top: auto;
+}
+
+.metadata-label {
+  font-weight: bold;
+  color: #444;
+}
+
+.game-genres, .game-platforms {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* 링크 스타일 제거 */
@@ -84,33 +130,66 @@
   text-decoration: none;
   color: inherit;
   display: block;
-  width: calc((100% - 3rem) / 4);
+  width: 270px; /* 카드와 동일한 너비 */
+  margin: 0 0 1rem 0; /* 좌우 마진 제거하고 하단 마진만 유지 */
 }
 
-/* 반응형 디자인 */
+/* main-content 컨테이너 스타일 수정 */
+.main-content {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between; /* 카드가 균등하게 분배되도록 설정 */
+  gap: 0; /* gap 대신 margin 사용 */
+}
+
+/* 반응형 디자인 - 화면 크기에 따라 카드 배치만 변경 */
 @media (max-width: 1200px) {
-  .game-card {
-    width: calc((100% - 2rem) / 3); /* 한 줄에 3개 */
+  /* 너비는 유지하고 배치만 변경 */
+  .main-content {
+    justify-content: space-between;
   }
-  .game-card-link {
-    width: calc((100% - 2rem) / 3);
+  
+  /* 마지막 행이 완전히 채워지지 않을 때 왼쪽 정렬되도록 가상 요소 추가 */
+  .main-content::after {
+    content: "";
+    width: 270px;
+    margin: 0;
+    flex: 0 0 270px;
+    height: 0;
   }
 }
 
 @media (max-width: 900px) {
-  .game-card {
-    width: calc((100% - 1rem) / 2); /* 한 줄에 2개 */
+  .main-content {
+    justify-content: space-around;
   }
-  .game-card-link {
-    width: calc((100% - 1rem) / 2);
+  
+  .main-content::after {
+    display: none;
   }
 }
 
 @media (max-width: 576px) {
-  .game-card {
-    width: 100%; /* 한 줄에 1개 */
-  }
   .game-card-link {
     width: 100%;
+    max-width: 270px;
+    margin: 0 auto 1rem auto;
   }
+  
+  .main-content {
+    justify-content: center;
+  }
+}
+
+/* 이미지 플레이스홀더 스타일 */
+.placeholder-image {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #e0e0e0;
+  color: #888;
+  font-size: 0.9rem;
+  text-align: center;
 }

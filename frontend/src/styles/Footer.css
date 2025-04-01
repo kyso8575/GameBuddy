@@ -7,7 +7,7 @@
 
 .footer {
   background-color: #1a1a1a;
-  color: #fff;
+  color: #f0f0f0;
   display: flex;
   flex-wrap: wrap;
   gap: 2rem;
@@ -15,44 +15,97 @@
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 2rem 1rem;
+  padding: 3rem 1.5rem 2rem 1.5rem;
   box-sizing: border-box;
 }
 
-.footer-info,
+.footer-about,
 .footer-links,
-.footer-genres,
-.footer-follow {
-  flex: 1 1 150px;
-  min-width: 150px;
+.footer-contact {
+  flex: 1 1 200px;
+  min-width: 200px;
+}
+
+.footer-about {
+  max-width: 350px;
+}
+
+.footer-about p {
+  margin-top: 0.8rem;
+  margin-bottom: 1.2rem;
+  line-height: 1.5;
+  color: #aaa;
+  font-size: 0.95rem;
+}
+
+.social-icons {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.social-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background-color: #333;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.social-icon:hover {
+  background-color: #555;
 }
 
 .footer h4 {
-  margin-bottom: 0.5rem;
-  font-size: 1rem;
+  margin-bottom: 1.2rem;
+  font-size: 1.1rem;
+  color: #fff;
+  font-weight: 600;
+  position: relative;
+  padding-bottom: 0.5rem;
 }
 
-.footer-links ul,
-.footer-genres ul,
-.footer-follow ul {
+.footer h4::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 40px;
+  height: 2px;
+  background-color: #555;
+}
+
+.footer-links ul {
   list-style: none;
   padding: 0;
   margin: 0;
 }
 
-.footer-links li,
-.footer-genres li,
-.footer-follow li {
-  margin-bottom: 0.5rem;
+.footer-links li {
+  margin-bottom: 0.8rem;
   cursor: pointer;
+  color: #aaa;
+  transition: color 0.2s;
+  font-size: 0.95rem;
 }
 
-.footer-bottom {
-  background-color: #1a1a1a;
+.footer-links li:hover {
   color: #fff;
-  text-align: center;
-  padding: 1rem;
-  font-size: 0.85rem;
-  width: 100%;
-  border-top: 1px solid #333;
+}
+
+.footer-contact p {
+  color: #aaa;
+  margin: 0.5rem 0;
+  font-size: 0.95rem;
+}
+
+@media (max-width: 768px) {
+  .footer {
+    padding: 2rem 1.5rem 1rem;
+    gap: 1.5rem;
+  }
 } 
