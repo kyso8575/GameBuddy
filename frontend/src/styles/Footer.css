@@ -103,6 +103,18 @@
   font-size: 0.95rem;
 }
 
+/* Footer 링크 스타일 */
+.footer-links a {
+  color: #aaa;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.footer-links a:hover {
+  color: #fff;
+  text-decoration: none;
+}
+
 @media (max-width: 768px) {
   .footer {
     padding: 2rem 1.5rem 1rem;

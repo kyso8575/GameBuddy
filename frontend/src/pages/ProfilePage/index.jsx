@@ -10,6 +10,11 @@ const DEFAULT_PROFILE_IMAGE = '/images/default_profile.png';
 const DEFAULT_GAME_IMAGE = '/images/default_game.png';
 const FALLBACK_IMAGE = 'https://via.placeholder.com/150?text=Image';
 
+// 서버로부터 받은 이미지 URL이 기본 이미지인지 확인하는 함수
+const isDefaultProfileImage = (url) => {
+  return !url || url.includes('default_profile.png');
+};
+
 const ProfilePage = () => {
   const { user, token, isAuthenticated } = useAuth();
   
@@ -27,6 +32,10 @@ const ProfilePage = () => {
     wishlist: null,
     comments: null
   });
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadError, setUploadError] = useState(null);
+  const fileInputRef = React.useRef(null);
+  const [imageKey, setImageKey] = useState(Date.now());
 
   // 프로필 정보 가져오기
   useEffect(() => {
@@ -48,6 +57,30 @@ const ProfilePage = () => {
         }
 
         const data = await response.json();
+        console.log('프로필 정보 응답:', data); // 응답 데이터 확인
+        
+        // 프로필 이미지가 있고 기본 이미지가 아닌 경우에만 URL 처리
+        if (data.profile_image && !isDefaultProfileImage(data.profile_image)) {
+          // URL 인코딩 문제를 방지하기 위해 전체 URL 구조 확인
+          try {
+            // URL 객체를 사용하여 유효성 검사 및 정규화
+            const imageUrl = new URL(data.profile_image, 'http://127.0.0.1:8000');
+            data.profile_image = imageUrl.href;
+            console.log('정규화된 이미지 URL:', data.profile_image);
+          } catch (urlError) {
+            console.error('이미지 URL 파싱 오류:', urlError);
+            // 백엔드에서 받은 URL을 그대로 사용
+          }
+          
+          // 캐시 버스팅을 위한 타임스탬프 추가
+          data.profile_image = data.profile_image.includes('?') 
+            ? `${data.profile_image}&t=${new Date().getTime()}` 
+            : `${data.profile_image}?t=${new Date().getTime()}`;
+        } else {
+          // 기본 이미지이거나 이미지가 없는 경우는 null로 설정하여 로컬 이미지 사용
+          data.profile_image = null;
+        }
+        
         setProfile(data);
         setError(prev => ({ ...prev, profile: null }));
       } catch (err) {
@@ -255,6 +288,151 @@ const ProfilePage = () => {
     }
   };
 
+  // 프로필 이미지 업로드 함수
+  const handleProfileImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // 파일 타입 검증
+    const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    if (!validTypes.includes(file.type)) {
+      setUploadError('이미지 파일(JPEG, PNG, GIF, WEBP)만 업로드 가능합니다.');
+      return;
+    }
+
+    // 파일 크기 검증 (5MB 제한)
+    if (file.size > 5 * 1024 * 1024) {
+      setUploadError('파일 크기는 5MB 이하여야 합니다.');
+      return;
+    }
+
+    setIsUploading(true);
+    setUploadError(null);
+
+    try {
+      const formData = new FormData();
+      formData.append('profile_image', file);
+
+      const response = await fetch('http://127.0.0.1:8000/accounts/update-profile-image/', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Token ${token}`
+        },
+        body: formData
+      });
+
+      if (!response.ok) {
+        throw new Error(`이미지 업로드 실패 (${response.status})`);
+      }
+
+      const data = await response.json();
+      console.log('이미지 업로드 응답:', data);
+      
+      // 이미지 URL 검증 및 캐시 방지
+      let imagePath = data.profile_image;
+      
+      // URL 객체로 변환하여 유효성 검사
+      try {
+        const imageUrl = new URL(imagePath, 'http://127.0.0.1:8000');
+        imagePath = imageUrl.href;
+        console.log('정규화된 업로드 이미지 URL:', imagePath);
+      } catch (urlError) {
+        console.error('업로드 이미지 URL 파싱 오류:', urlError);
+        // 원래 URL 유지
+      }
+      
+      // 캐시 방지를 위한 타임스탬프 추가
+      const imageWithTimestamp = imagePath.includes('?') 
+        ? `${imagePath}&t=${new Date().getTime()}` 
+        : `${imagePath}?t=${new Date().getTime()}`;
+      
+      // 프로필 상태 업데이트
+      setProfile(prevProfile => ({
+        ...prevProfile,
+        profile_image: imageWithTimestamp
+      }));
+      
+      // 이미지 갱신을 위한 키 업데이트
+      setImageKey(Date.now());
+
+      // 성공 메시지 표시
+      alert('프로필 이미지가 성공적으로 업데이트되었습니다.');
+      
+      // 2초 후 페이지 새로고침
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
+    } catch (err) {
+      console.error('이미지 업로드 오류:', err.message);
+      setUploadError('이미지 업로드 중 오류가 발생했습니다. 다시 시도해 주세요.');
+    } finally {
+      setIsUploading(false);
+      // 파일 입력 초기화
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
+
+  // 이미지 업로드 버튼 클릭 핸들러
+  const handleUploadButtonClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  // 프로필 이미지 삭제 함수 수정
+  const handleDeleteProfileImage = async () => {
+    if (!isAuthenticated() || !token) {
+      return;
+    }
+
+    // 사용자 확인
+    if (!window.confirm('프로필 이미지를 삭제하고 기본 이미지로 돌아가시겠습니까?')) {
+      return;
+    }
+
+    setIsUploading(true);
+    setUploadError(null);
+
+    try {
+      const response = await fetch('http://127.0.0.1:8000/accounts/update-profile-image/', {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Token ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`이미지 삭제 실패 (${response.status})`);
+      }
+
+      const data = await response.json();
+      console.log('이미지 삭제 응답:', data);
+
+      // 프로필 상태 업데이트 (기본 이미지로 설정)
+      setProfile(prevProfile => ({
+        ...prevProfile,
+        profile_image: null // 로컬 기본 이미지 사용
+      }));
+      
+      // 이미지 갱신을 위한 키 업데이트
+      setImageKey(Date.now());
+
+      // 성공 메시지 표시
+      alert('프로필 이미지가 성공적으로 삭제되었습니다.');
+      
+      // 페이지 새로고침
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
+    } catch (err) {
+      console.error('이미지 삭제 오류:', err.message);
+      setUploadError('이미지 삭제 중 오류가 발생했습니다. 다시 시도해 주세요.');
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   // 로딩 중이면 로딩 표시
   if (loading.profile) {
     return (
@@ -308,10 +486,15 @@ const ProfilePage = () => {
             <div className="profile-avatar-container">
               {profile.profile_image ? (
                 <img
-                  src={profile.profile_image}
+                  key={imageKey}
+                  src={`${profile.profile_image}`}
                   alt="프로필 이미지"
                   className="profile-avatar"
+                  crossOrigin="anonymous"
                   onError={(e) => {
+                    console.error('프로필 이미지 로드 실패:', e);
+                    // 디버깅을 위해 추가 정보 출력
+                    console.log('시도한 이미지 URL:', e.target.src);
                     e.target.onerror = null;
                     e.target.src = DEFAULT_PROFILE_IMAGE;
                   }}
@@ -322,11 +505,41 @@ const ProfilePage = () => {
                   alt="기본 프로필 이미지"
                   className="profile-avatar"
                   onError={(e) => {
+                    console.error('기본 이미지 로드 실패:', e);
+                    console.log('시도한 기본 이미지 URL:', e.target.src);
                     e.target.onerror = null;
                     e.target.src = FALLBACK_IMAGE;
                   }}
                 />
               )}
+              <div className="profile-image-upload">
+                <input
+                  type="file"
+                  accept="image/*"
+                  ref={fileInputRef}
+                  onChange={handleProfileImageUpload}
+                  style={{ display: 'none' }}
+                />
+                <div className="profile-image-buttons">
+                  <button 
+                    className="upload-button"
+                    onClick={handleUploadButtonClick}
+                    disabled={isUploading}
+                  >
+                    {isUploading ? '업로드 중...' : '이미지 변경'}
+                  </button>
+                  {profile.profile_image && (
+                    <button 
+                      className="delete-button"
+                      onClick={handleDeleteProfileImage}
+                      disabled={isUploading}
+                    >
+                      삭제
+                    </button>
+                  )}
+                </div>
+                {uploadError && <p className="upload-error">{uploadError}</p>}
+              </div>
             </div>
             <div className="profile-basic-info">
               <h2 className="profile-name">{profile.first_name || profile.username}</h2>

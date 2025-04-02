@@ -17,8 +17,6 @@ function NavBar() {
         <ul className="menu">
           <li><Link to="/">Home</Link></li>
           <li><Link to="/chatbot">Chatbot</Link></li>
-          <li><Link to="/browse">Browse</Link></li>
-          <li><Link to="/about">About</Link></li>
         </ul>
         <div className="auth-buttons">
           {isAuthenticated() ? (
