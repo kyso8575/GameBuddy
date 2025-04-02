@@ -11,4 +11,5 @@ urlpatterns = [
     path('profile/<int:id>/', views.UserProfileAPIView.as_view(), name='profile'),
     path('current-user/', views.CurrentUserView.as_view(), name='current_user'),
     path('change-password/', views.ChangePasswordView.as_view(), name='change_password'),
+    path('update-profile-image/', views.ProfileImageUpdateView.as_view(), name='update_profile_image'),
 ]
