@@ -10,6 +10,8 @@ from rest_framework.authtoken.models import Token
 from rest_framework.parsers import MultiPartParser, FormParser
 from .serializers import UserSerializer, ProfileImageSerializer
 from rest_framework.views import APIView
+import os
+from django.conf import settings
 
 
 User = get_user_model()  # Current configured user model
@@ -54,13 +56,14 @@ class SignupAPIView(APIView):
     API based Signup view
     """
     def post(self, request):
-        full_name = request.data.get("full_name")
+        first_name = request.data.get("first_name")
+        last_name = request.data.get("last_name")
         username = request.data.get("username")
         password = request.data.get("password")
         confirm_password = request.data.get("confirm_password")
 
         # Check required fields
-        if not all([full_name, username, password, confirm_password]):
+        if not all([first_name, last_name, username, password, confirm_password]):
             return Response(
                 {"detail": "All fields are required."},
                 status=status.HTTP_400_BAD_REQUEST
@@ -96,7 +99,8 @@ class SignupAPIView(APIView):
         user = User.objects.create_user(
             username=username,
             password=password,
-            first_name=full_name
+            first_name=first_name,
+            last_name=last_name
         )
         user.save()
 
@@ -214,3 +218,68 @@ class ProfileImageUpdateView(APIView):
             user_serializer = UserSerializer(request.user, context={'request': request})
             return Response(user_serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+    def post(self, request):
+        """Handle POST requests for profile image uploads"""
+        user = request.user
+        
+        # Delete existing profile image file
+        if user.profile_image:
+            # Only attempt to delete if it's not the default image
+            if not 'default_profile' in str(user.profile_image):
+                try:
+                    # Get absolute path of the file
+                    file_path = os.path.join(settings.MEDIA_ROOT, str(user.profile_image))
+                    
+                    # Check if file exists and delete it
+                    if os.path.isfile(file_path):
+                        os.remove(file_path)
+                        print(f"Image change: Previous profile image file deleted successfully: {file_path}")
+                    else:
+                        print(f"Image change: Previous file not found: {file_path}")
+                except Exception as e:
+                    print(f"Image change: Error occurred while deleting previous profile image: {e}")
+        
+        # Process new image upload
+        serializer = ProfileImageSerializer(request.user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            # Return updated user information with profile image URL
+            user_serializer = UserSerializer(request.user, context={'request': request})
+            return Response({
+                'message': 'Profile image updated successfully',
+                'profile_image': user_serializer.data.get('profile_image')
+            }, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+    def delete(self, request):
+        """Handle DELETE requests to reset profile image to default"""
+        user = request.user
+        
+        # Delete existing profile image file
+        if user.profile_image:
+            # Only attempt to delete if it's not the default image
+            if not 'default_profile' in str(user.profile_image):
+                try:
+                    # Get absolute path of the file
+                    file_path = os.path.join(settings.MEDIA_ROOT, str(user.profile_image))
+                    
+                    # Check if file exists and delete it
+                    if os.path.isfile(file_path):
+                        os.remove(file_path)
+                        print(f"Profile image file deleted successfully: {file_path}")
+                    else:
+                        print(f"File not found: {file_path}")
+                except Exception as e:
+                    print(f"Error occurred while deleting profile image file: {e}")
+        
+        # Reset to default image (set to null to handle on frontend)
+        user.profile_image = None
+        user.save()
+        
+        # Return updated user information
+        user_serializer = UserSerializer(user, context={'request': request})
+        return Response({
+            'message': 'Profile image reset to default successfully',
+            'profile_image': None
+        }, status=status.HTTP_200_OK)

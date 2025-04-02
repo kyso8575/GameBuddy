@@ -26,6 +26,7 @@ urlpatterns = [
     path('chatbot/', include("chatbot.urls")),
     path('games/', include("games.urls")),
     path('reviews/', include("reviews.urls")),
+    path('wishlist/', include("wishlist.urls")),
 ]
 
 if settings.DEBUG:
